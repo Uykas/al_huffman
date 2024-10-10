@@ -1,9 +1,10 @@
 # Group 7: Huffman Coding (Practical)
-## Team
-Sultanova Aruzhan, Duisenbiyeva Sayagul, Zhaukimbekov Alisher and Uikas Olzhas
 
 ## Subject
 Algorithm
+
+## Team
+Sultanova Aruzhan, Duisenbiyeva Sayagul, Zhaukimbekov Alisher and Uikas Olzhas
 
 ## Task
 Implement Huffman coding for data compression using a greedy algorithm.
@@ -28,9 +29,11 @@ This project implements the Huffman coding algorithm, which includes the followi
 4. **Text Compression**: Encodes the input text using the generated Huffman codes.
 
 ### Code Structure
-- `app.py`: Main application file containing the implementation of the Huffman coding algorithm.
+- `manage.py`: Main entry point for running the Django application.
+- `app.py`: Implementation of the Huffman coding algorithm.
 - `templates/index.html`: HTML file for user input and displaying results.
 
 ### Prerequisites
 - Python 3.x
-- Flask (install using `pip install Flask`)
+- Django (install using `pip install Django`)
+
