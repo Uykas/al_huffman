@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huffman Text Compression</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #e9ecef;
+        }
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Huffman Text Compression</h1>
+        <h3>By Sultanova Aruzhan, Duisenbiyeva Sayagul, Zhaukimbekov Alisher and Uikas Olzhas</h3>
+        <h2>For Algorithm</h2>
+        <form id="compressForm" method="POST" autocomplete="off">
+            {% csrf_token %}
+            <textarea id="inputText" name="input_text" placeholder="Enter text to compress" autocomplete="off">{{ input_text }}</textarea><br>
+            <button type="submit">Compress Text</button>
+        </form>
+
+        {% if encoded_text %}
+        <h2>Compressed Text:</h2>
+        <p id="encodedText">{{ encoded_text }}</p>
+
+        <h2>Huffman Codes:</h2>
+        <ul id="huffmanCodes">
+            {% for char, code in huffman_codes.items %}
+            <li><strong>{{ char|default:"[space]" }}</strong>: {{ code }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="step">
+            <h2>Step-by-Step Explanation</h2>
+            <ol>
+                <li>
+                    <strong>Step 1: Calculate Frequencies</strong>
+                    <p>We calculate how often each character appears in the text. This helps us to build the tree efficiently.</p>
+                    <pre><code>def calculate_frequencies(text):
+    frequency = {}
+    for char in text:
+        if char in frequency:
+            frequency[char] += 1  # Increment frequency count
+        else:
+            frequency[char] = 1  # Initialize frequency count
+    return frequency</code></pre>
+                </li>
+                <li>
+                    <strong>Step 2: Build the Huffman Tree</strong>
+                    <p>We create a priority queue and insert nodes for each character based on their frequency. The two nodes with the lowest frequencies are merged repeatedly until only one node remains, which becomes the root of the Huffman tree.</p>
+                    <pre><code>import heapq
+
+def build_huffman_tree(frequencies):
+    heap = []
+    
+    # Create a priority queue (min-heap) from the frequency dictionary
+    for char, freq in frequencies.items():
+        heapq.heappush(heap, Node(char, freq))  # Push nodes to the heap
+
+    while len(heap) > 1:
+        # Pop the two nodes with the smallest frequency
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+
+        # Create a new internal node with these two nodes as children
+        merged = Node(None, left.freq + right.freq)  # Merging nodes
+        merged.left = left
+        merged.right = right
+
+        # Push the merged node back into the heap
+        heapq.heappush(heap, merged)
+
+    return heap[0]</code></pre>
+                </li>
+                <li>
+                    <strong>Step 3: Generate Huffman Codes</strong>
+                    <p>We traverse the tree from the root to each leaf node, assigning binary codes. Moving left assigns a '0' and moving right assigns a '1'. Each character receives a unique code.</p>
+                    <pre><code>def get_huffman_codes(node, prefix='', codebook={}):
+    if node is not None:
+        # If it's a leaf node, add the character and its code to the codebook
+        if node.char is not None:
+            codebook[node.char] = prefix
+        get_huffman_codes(node.left, prefix + '0', codebook)  # Traverse left
+        get_huffman_codes(node.right, prefix + '1', codebook)  # Traverse right
+    return codebook</code></pre>
+                </li>
+                <li>
+                    <strong>Step 4: Encode the Text</strong>
+                    <p>We replace each character in the original text with its corresponding Huffman code to create the compressed string.</p>
+                    <pre><code>def huffman_compress(text):
+    frequencies = calculate_frequencies(text)  # Step 1: Calculate frequencies
+    root = build_huffman_tree(frequencies)     # Step 2: Build Huffman tree
+    huffman_codes = get_huffman_codes(root)     # Step 3: Get Huffman codes
+    encoded_text = ''.join(huffman_codes[char] for char in text)  # Step 4: Encode the text
+    return encoded_text, huffman_codes</code></pre>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function clearResults() {
+            document.getElementById('encodedText').innerHTML = '';
+            document.getElementById('huffmanCodes').innerHTML = '';
+        }
+
+        document.getElementById('compressForm').addEventListener('submit', function(e) {
+            clearResults();
+        });
+    </script>
+</body>
+</html>
