@@ -31,13 +31,6 @@ This project implements the Huffman coding algorithm, which includes the followi
 - `app.py`: Main application file containing the implementation of the Huffman coding algorithm.
 - `templates/index.html`: HTML file for user input and displaying results.
 
-## How to Run the Project
-
 ### Prerequisites
 - Python 3.x
 - Flask (install using `pip install Flask`)
-
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your_username/huffman-compression.git
